@@ -2,7 +2,7 @@ name: Backend CI
 on:
   pull_request:
   push:
-    branches: [main, master]
+    branches: [develop, master]
 jobs:
   backend:
     runs-on: ubuntu-latest

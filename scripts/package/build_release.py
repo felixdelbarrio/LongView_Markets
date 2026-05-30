@@ -23,18 +23,28 @@ def stage_platform(platform: str) -> Path:
         shutil.rmtree(target)
     target.mkdir(parents=True)
     copy_tree(ROOT / "frontend" / "dist", target / "frontend_dist")
-    shutil.copytree(ROOT / "backend", target / "backend", ignore=shutil.ignore_patterns(".mypy_cache", ".pytest_cache", "__pycache__"))
+    shutil.copytree(
+        ROOT / "backend",
+        target / "backend",
+        ignore=shutil.ignore_patterns(".mypy_cache", ".pytest_cache", "__pycache__"),
+    )
     shutil.copytree(ROOT / "scripts" / "package" / "assets", target / "assets")
     shutil.copy(ROOT / ".env.example", target / ".env.example")
     shutil.copy(ROOT / "README.md", target / "README.md")
     if platform == "windows":
-        (target / "start-longview.bat").write_text("@echo off\npython backend\\app\\launcher.py\n", encoding="utf-8")
+        (target / "start-longview.bat").write_text(
+            '@echo off\r\ncd /d "%~dp0backend"\r\npython -m app.launcher\r\n',
+            encoding="utf-8",
+        )
     else:
         script = target / "start-longview.sh"
-        script.write_text("#!/usr/bin/env bash\nset -euo pipefail\npython3 backend/app/launcher.py\n", encoding="utf-8")
+        script.write_text(
+            '#!/usr/bin/env bash\nset -euo pipefail\ncd "$(dirname "$0")/backend"\npython3 -m app.launcher\n',
+            encoding="utf-8",
+        )
         script.chmod(0o755)
     (target / "PACKAGE-NOTES.md").write_text(
-        f"# LongView Markets {VERSION}\n\nThis package includes the branded icon assets and launcher strategy. Native PyInstaller executables are prepared by the release workflow when supported by the runner.\n",
+        f"# LongView Markets {VERSION}\n\nThis package includes the branded icon assets and a WebView app-frame launcher. Native PyInstaller executables are prepared by the release workflow when supported by the runner.\n",
         encoding="utf-8",
     )
     return target
@@ -58,7 +68,10 @@ def main() -> int:
     for required in ["longview-icon.ico", "longview-icon.icns", "longview-icon.png"]:
         if not (ROOT / "scripts" / "package" / "assets" / required).exists():
             raise SystemExit(f"Missing branded icon asset: {required}")
-    outputs = [archive(stage_platform(platform), platform) for platform in ["windows", "linux", "macos"]]
+    outputs = [
+        archive(stage_platform(platform), platform)
+        for platform in ["windows", "linux", "macos"]
+    ]
     checksums = []
     for output in outputs:
         digest = hashlib.sha256(output.read_bytes()).hexdigest()
