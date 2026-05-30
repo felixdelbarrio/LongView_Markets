@@ -1,6 +1,6 @@
 # Ci Cd
 
-CI is split by backend, frontend, CodeQL, security, coverage, docs and release workflows. Pull requests run the validation workflows, pushes to `develop` and `master` run branch validation, and releases run only from `master`. Dependabot monitors pip and npm ecosystems.
+CI is split by backend, frontend, CodeQL, security, coverage, docs, release dry-run and release workflows. Pull requests run validation plus release dry-run. Pushes to `develop` and `master` run branch validation. Release runs only from `master` or manual dispatch and publishes only when tag conditions are met. Dependabot monitors pip and npm ecosystems.
 
 ## Operating Principle
 

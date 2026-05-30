@@ -14,7 +14,9 @@ class ScreenerEngine:
     ]
 
     def screen(
-        self, instruments: list[dict[str, Any]], analytics_by_ticker: dict[str, dict[str, Any]]
+        self,
+        instruments: list[dict[str, Any]],
+        analytics_by_ticker: dict[str, dict[str, Any]],
     ) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         for instrument in instruments:
@@ -37,4 +39,8 @@ class ScreenerEngine:
                     "confidence": instrument["confidence"],
                 }
             )
-        return sorted(rows, key=lambda item: (item["data_quality_score"], item["cagr"]), reverse=True)
+        return sorted(
+            rows,
+            key=lambda item: (item["data_quality_score"], item["cagr"]),
+            reverse=True,
+        )

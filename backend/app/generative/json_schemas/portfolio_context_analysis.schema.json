@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "portfolio_context_analysis",
+  "type": "object",
+  "required": ["schema_version", "prompt_version", "analysis_type", "portfolio_id", "generated_at", "language", "executive_summary", "limitations", "not_financial_advice"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "analysis_type": { "const": "portfolio_context_analysis" },
+    "portfolio_id": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "not_financial_advice": { "const": true }
+  }
+}

@@ -33,7 +33,9 @@ def test_portfolio_and_simulation_engines() -> None:
         for item in demo_repository.get_instruments()
     }
     summary = SimulationEngine().summarize(
-        demo_repository.get_portfolio_transactions(True), latest, demo_repository.get_instruments()
+        demo_repository.get_portfolio_transactions(True),
+        latest,
+        demo_repository.get_instruments(),
     )
     assert summary["total_value"] > 0
     assert SimulationEngine().convert_to_real({"ticker": "MSFT"})["requires_confirmation"] is True

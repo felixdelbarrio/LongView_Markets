@@ -1,0 +1,3 @@
+name: MSCI World ETF sample
+description: ETFs MSCI World UCITS de ejemplo.
+tickers: [IWDA.AS, EUNL.DE, VWCE.DE]

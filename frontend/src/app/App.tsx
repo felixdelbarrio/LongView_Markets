@@ -8,6 +8,7 @@ import { DecisionJournal } from "../pages/DecisionJournal";
 import { DividendFisher } from "../pages/DividendFisher";
 import { ExecutiveDemo } from "../pages/ExecutiveDemo";
 import { Forecasting } from "../pages/Forecasting";
+import { GenerativeIngestion } from "../pages/GenerativeIngestion";
 import { Insights } from "../pages/Insights";
 import { InstrumentDetail } from "../pages/InstrumentDetail";
 import { Learn } from "../pages/Learn";
@@ -37,6 +38,8 @@ export function App() {
         <Route path="/dividend-fisher" element={<DividendFisher />} />
         <Route path="/tax-advisor" element={<TaxAdvisor />} />
         <Route path="/forecasting" element={<Forecasting />} />
+        <Route path="/generative-ingestion" element={<GenerativeIngestion />} />
+        <Route path="/settings/generative" element={<GenerativeIngestion />} />
         <Route path="/data-quality" element={<DataQuality />} />
         <Route path="/screener" element={<Screener />} />
         <Route path="/watchlists" element={<Watchlists />} />

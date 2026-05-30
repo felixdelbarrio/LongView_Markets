@@ -1,6 +1,8 @@
 # Release
 
-Release runs only on push to master. It executes validation, `make ci`, `make build`, packages Windows/Linux/macOS archives with official icons, produces checksums and uploads artifacts. Packaged start scripts run `app.launcher`, which serves the compiled frontend locally and opens a native WebView app frame instead of an external browser. Native signed PyInstaller binaries are prepared as a documented follow-up when runner support is stable.
+Release runs only on push to master, with optional manual `workflow_dispatch`. It executes validation, `make ci`, platform packaging, checksums and artifact upload. Windows runs PyInstaller on `windows-latest` and must produce `LongView Markets.exe` with the official `.ico`; diagnostic `.bat` files are not the primary entrypoint. Linux and macOS produce tarballs with runtime launch scripts. The package includes `.env.example`, never `.env`.
+
+Use `make release-dry-run` locally for structural checks. The PR workflow `release-dry-run.yml` validates release packaging on Linux, Windows and macOS without publishing a GitHub Release.
 
 ## Operating Principle
 

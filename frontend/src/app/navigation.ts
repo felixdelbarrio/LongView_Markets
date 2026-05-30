@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   TestTube2,
   WalletCards,
+  FileJson,
 } from "lucide-react";
 
 export const navItems = [
@@ -33,6 +34,7 @@ export const navItems = [
   { to: "/dividend-fisher", key: "nav.dividendFisher", icon: CalendarDays },
   { to: "/tax-advisor", key: "nav.taxAdvisor", icon: Landmark },
   { to: "/forecasting", key: "nav.forecasting", icon: LineChart },
+  { to: "/generative-ingestion", key: "nav.generativeIngestion", icon: FileJson },
   { to: "/data-quality", key: "nav.dataQuality", icon: ShieldCheck },
   { to: "/screener", key: "nav.screener", icon: Gauge },
   { to: "/watchlists", key: "nav.watchlists", icon: ListChecks },

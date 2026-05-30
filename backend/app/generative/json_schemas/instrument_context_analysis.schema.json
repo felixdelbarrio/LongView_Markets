@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "instrument_context_analysis",
+  "type": "object",
+  "required": ["schema_version", "prompt_version", "analysis_type", "ticker", "generated_at", "language", "executive_summary", "limitations", "not_financial_advice"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "analysis_type": { "const": "instrument_context_analysis" },
+    "ticker": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "not_financial_advice": { "const": true }
+  }
+}

@@ -21,6 +21,7 @@ LongView Markets es una herramienta informativa y educativa. No proporciona ases
 ## Quickstart
 
 ```bash
+make help
 make install
 make run
 ```
@@ -81,7 +82,27 @@ Critical financial metrics are centralized in `backend/app/analytics/calculation
 
 ## Launcher and Packaging
 
-`make run` hides backend/frontend complexity during development and presents the product in a self-contained WebView application frame. `make build` compiles the frontend and creates Windows, Linux and macOS archives in `dist/` with WebView launcher scripts, backend code, compiled frontend, `.env.example`, checksums and official LongView icon assets. The repository follows GitFlow with `master` as the production/default branch and `develop` as the integration branch. The release workflow runs only on pushes to `master` per the release rule.
+`make run` hides backend/frontend complexity during development and presents the product in a self-contained WebView application frame. `make build` compiles the frontend and creates Windows, Linux and macOS archives in `dist/` with WebView launcher scripts, backend code, compiled frontend, `.env.example`, checksums and official LongView icon assets. Windows release runners build `LongView Markets.exe` with PyInstaller and the official icon; `.bat` files are diagnostic only. The repository follows GitFlow with `master` as the production branch and `develop` as the integration branch. The release workflow runs only on pushes to `master`.
+
+## Manual Portfolio Entry
+
+LongView Markets does not import Excel in this iteration. Rebuild your history by entering every real transaction once:
+
+- First buy: ticker, date, quantity, unit price, currency, fees, taxes, broker and notes.
+- Successive buys: add each purchase with its real date so lots remain auditable.
+- Partial sells: the backend consumes lots by FIFO and separates realized PnL from unrealized PnL.
+- Dividends: enter gross amount, currency and withholding tax; dividends remain separate from capital gains.
+- Multi-currency positions: values are converted to the base currency, EUR by default, with FX date and quality flags.
+
+The backend calculation engine reconstructs daily portfolio history, instrument history, monthly and annual summaries, dividend totals, PyG diario, stale price/FX flags, forecasts and anomalies.
+
+## Generative Ingestion
+
+The `/generative-ingestion` screen prepares structured context, produces strict JSON prompts for an external GPT URL, validates pasted JSON responses, repairs simple JSON issues deterministically, stores validated responses historically and marks them as `generative_inference`. Generative output never replaces observed market data or quantitative calculations.
+
+## Design And Calculations
+
+The visual system lives in `frontend/src/design-system` with centralized tokens, reusable components and lint checks for page-level inline styles or hardcoded hex colors. Critical financial calculations live in `backend/app/calculations` with `CALCULATION_ENGINE_VERSION = "0.2.0"`; the frontend renders values and form validation only.
 
 ## Security
 

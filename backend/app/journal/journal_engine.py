@@ -10,4 +10,8 @@ class JournalEngine:
         return demo_repository.get_journal_entries()
 
     def create(self, payload: dict[str, Any]) -> dict[str, Any]:
-        return {"id": payload.get("id", "custom-journal-entry"), "status": "active", **payload}
+        return {
+            "id": payload.get("id", "custom-journal-entry"),
+            "status": "active",
+            **payload,
+        }

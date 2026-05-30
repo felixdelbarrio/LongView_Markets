@@ -1,10 +1,28 @@
 SHELL := /bin/bash
-PYTHON ?= python3.13
+PYTHON ?= python3
 VENV := .venv
 VENV_PY := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 
-.PHONY: install run build clean kill lint format typecheck test coverage security ci
+.DEFAULT_GOAL := help
+
+.PHONY: help install run build clean kill lint format typecheck test coverage security ci release-dry-run
+
+help:
+	@echo "LongView Markets"
+	@echo "Comandos disponibles:"
+	@echo "  make install     Instala backend, frontend y prepara .env local"
+	@echo "  make run         Arranca backend + frontend e inicializa datos si faltan"
+	@echo "  make build       Compila frontend y prepara artefactos de release"
+	@echo "  make clean       Limpia caches, builds y temporales"
+	@echo "  make kill        Detiene procesos arrancados por make run"
+	@echo "  make lint        Ejecuta linters backend/frontend"
+	@echo "  make format      Formatea backend/frontend"
+	@echo "  make typecheck   Ejecuta typecheck backend/frontend"
+	@echo "  make test        Ejecuta tests backend/frontend"
+	@echo "  make coverage    Ejecuta cobertura y exige backend >= 80%"
+	@echo "  make security    Ejecuta checks de seguridad"
+	@echo "  make ci          Ejecuta lint, typecheck, test, coverage, security y build"
 
 install:
 	test -d $(VENV) || $(PYTHON) -m venv $(VENV)
@@ -33,6 +51,7 @@ kill:
 lint:
 	cd backend && ../$(VENV_PY) -m ruff check app
 	cd backend && ../$(VENV_PY) -m black --check app
+	$(VENV_PY) scripts/design/check_design_system.py
 	npm --prefix frontend run lint
 	npm --prefix frontend run format:check
 
@@ -59,3 +78,6 @@ security:
 	$(VENV_PY) scripts/check_secrets.py
 
 ci: lint typecheck test coverage security build
+
+release-dry-run:
+	$(VENV_PY) scripts/release/check_release_artifacts.py --platform current --allow-missing-windows-exe
