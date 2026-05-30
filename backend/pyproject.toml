@@ -20,6 +20,7 @@ dependencies = [
   "APScheduler>=3.10",
   "typer>=0.15",
   "PyYAML>=6.0",
+  "pywebview>=5.4",
 ]
 
 [project.optional-dependencies]
