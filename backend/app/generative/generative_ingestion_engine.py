@@ -187,9 +187,9 @@ class GenerativeIngestionEngine:
                             "error": ",".join(result["errors"]),
                         }
                     )
-            except (json.JSONDecodeError, KeyError) as exc:
+            except (json.JSONDecodeError, KeyError):
                 failed += 1
-                errors.append({"job_id": "unknown", "error": str(exc)})
+                errors.append({"job_id": "unknown", "error": "Invalid JSONL input format."})
         return {"imported": imported, "failed": failed, "repaired": 0, "errors": errors}
 
     def _extract_confidence(self, value: Any) -> float:
