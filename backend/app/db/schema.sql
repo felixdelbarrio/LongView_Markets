@@ -1,0 +1,2 @@
+-- LongView Markets operational SQLite schema.
+-- Runtime migrations are applied from app.db.database.SCHEMA_SQL.

@@ -33,9 +33,13 @@ from app.providers.dividend_provider import Provider as DividendProvider
 from app.providers.mock_provider import MockProvider
 from app.providers.news_provider import Provider as NewsProvider
 from app.repositories import demo_repository
+from app.repositories.dividend_repository import DividendRepository
+from app.repositories.instrument_repository import InstrumentRepository
 from app.repositories.metadata_repository import MetadataRepository
+from app.repositories.news_repository import NewsRepository
 from app.repositories.parquet_repository import ParquetRepository
 from app.repositories.portfolio_repository import LocalRepository as PortfolioRepository
+from app.repositories.price_repository import PriceRepository
 from app.repositories.settings_repository import LocalRepository as SettingsRepository
 
 
@@ -184,7 +188,14 @@ def test_domain_models_and_value_objects() -> None:
         == "central"
     )
     assert (
-        Watchlist(id="1", name="List", description="Demo", items=[], created_at=now, updated_at=now).name
+        Watchlist(
+            id="1",
+            name="List",
+            description="Demo",
+            items=[],
+            created_at=now,
+            updated_at=now,
+        ).name
         == "List"
     )
     assert (
@@ -231,8 +242,18 @@ def test_repositories_and_forecast_request(tmp_path) -> None:
     assert parquet.read_prices("MSFT")
     portfolio_repo = PortfolioRepository()
     settings_repo = SettingsRepository()
+    instrument_repo = InstrumentRepository()
+    price_repo = PriceRepository()
+    news_repo = NewsRepository()
+    dividend_repo = DividendRepository()
     assert portfolio_repo.add({"ticker": "MSFT"})["ticker"] == "MSFT"
     assert settings_repo.all() == []
+    assert instrument_repo.get("MSFT") is not None
+    assert instrument_repo.search("micro")
+    assert price_repo.get_daily_prices("MSFT")
+    assert "MSFT" in price_repo.latest_prices(["MSFT", "UNKNOWN"])
+    assert news_repo.list("MSFT")
+    assert dividend_repo.list("KO")
     assert status["parquet"] == "ready"
     assert ForecastRequest(ticker="MSFT").horizon_days == 90
     assert SCENARIOS == ["adverse", "central", "optimistic"]

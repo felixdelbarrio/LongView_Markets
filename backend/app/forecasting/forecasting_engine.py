@@ -14,7 +14,11 @@ class ForecastingEngine:
         slope = (closes[-1] - closes[0]) / len(closes)
         last = closes[-1]
         scenarios = []
-        for scenario, multiplier in [("adverse", 0.35), ("central", 1.0), ("optimistic", 1.55)]:
+        for scenario, multiplier in [
+            ("adverse", 0.35),
+            ("central", 1.0),
+            ("optimistic", 1.55),
+        ]:
             path = []
             for day in range(1, horizon_days + 1, 7):
                 expected = max(0.1, last + slope * day * multiplier)

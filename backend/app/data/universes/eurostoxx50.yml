@@ -1,0 +1,3 @@
+name: EuroStoxx 50
+description: Valores europeos líquidos.
+tickers: [ASML.AS, MC.PA, OR.PA, AIR.PA, SAP.DE, SIE.DE, ALV.DE, ENEL.MI, ISP.MI]

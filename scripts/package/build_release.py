@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import argparse
 import shutil
 import tarfile
 import zipfile
@@ -31,8 +32,23 @@ def stage_platform(platform: str) -> Path:
     shutil.copytree(ROOT / "scripts" / "package" / "assets", target / "assets")
     shutil.copy(ROOT / ".env.example", target / ".env.example")
     shutil.copy(ROOT / "README.md", target / "README.md")
+    (target / "README-RUNTIME.md").write_text(
+        f"""# LongView Markets {VERSION}
+
+Ejecuta el artefacto de tu plataforma. El paquete incluye `.env.example`, backend, frontend compilado, assets de marca y launcher autocontenido.
+
+Windows: usa `LongView Markets.exe` como entrada principal. El `.bat`, si existe, es diagnostico tecnico.
+Linux/macOS: usa `start-longview.sh`.
+
+No se empaqueta `.env` ni secretos reales.
+""",
+        encoding="utf-8",
+    )
     if platform == "windows":
-        (target / "start-longview.bat").write_text(
+        exe = DIST / "LongView Markets.exe"
+        if exe.exists():
+            shutil.copy(exe, target / "LongView Markets.exe")
+        (target / "start-longview-diagnostic.bat").write_text(
             '@echo off\r\ncd /d "%~dp0backend"\r\npython -m app.launcher\r\n',
             encoding="utf-8",
         )
@@ -64,14 +80,19 @@ def archive(path: Path, platform: str) -> Path:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--platform", choices=["windows", "linux", "macos", "all"], default="all"
+    )
+    args = parser.parse_args()
     DIST.mkdir(exist_ok=True)
     for required in ["longview-icon.ico", "longview-icon.icns", "longview-icon.png"]:
         if not (ROOT / "scripts" / "package" / "assets" / required).exists():
             raise SystemExit(f"Missing branded icon asset: {required}")
-    outputs = [
-        archive(stage_platform(platform), platform)
-        for platform in ["windows", "linux", "macos"]
-    ]
+    platforms = (
+        ["windows", "linux", "macos"] if args.platform == "all" else [args.platform]
+    )
+    outputs = [archive(stage_platform(platform), platform) for platform in platforms]
     checksums = []
     for output in outputs:
         digest = hashlib.sha256(output.read_bytes()).hexdigest()

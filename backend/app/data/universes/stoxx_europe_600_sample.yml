@@ -1,0 +1,3 @@
+name: Stoxx Europe 600 sample
+description: Muestra paneuropea.
+tickers: [ASML.AS, MC.PA, OR.PA, AIR.PA, SAP.DE, SIE.DE, ALV.DE, ENEL.MI, ISP.MI, NESN.SW, ROG.SW, SHEL.L, AZN.L, EDP.LS]

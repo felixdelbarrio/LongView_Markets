@@ -12,9 +12,17 @@ import { Sparkline } from "../components/charts/Sparkline";
 
 export function Dashboard() {
   const { t } = useTranslation();
-  const { data } = useQuery({ queryKey: ["dashboard"], queryFn: api.dashboard });
+  const { data: result } = useQuery({ queryKey: ["dashboard"], queryFn: api.dashboard });
+  const data = result?.data;
   if (!data) {
-    return <div className="h-96 animate-pulse rounded-lg bg-panel" />;
+    return (
+      <div className="space-y-6">
+        <section className="rounded-lg border border-line bg-panel p-6">
+          <h1 className="text-4xl font-black">{t("dashboard.title")}</h1>
+          <p className="mt-3 text-muted">Backend no disponible. Revisa `make run`.</p>
+        </section>
+      </div>
+    );
   }
   const spark = data.opportunities.map((item, index) => ({
     value: Number(item.cagr ?? index) + 20,

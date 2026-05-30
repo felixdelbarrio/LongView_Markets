@@ -77,7 +77,11 @@ class CalculationEngine:
         dividends: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         if len(prices) < 2:
-            return {"status": "insufficient_data", "metrics": {}, "descriptions": METRIC_DESCRIPTIONS}
+            return {
+                "status": "insufficient_data",
+                "metrics": {},
+                "descriptions": METRIC_DESCRIPTIONS,
+            }
         closes = [float(row["adjusted_close"]) for row in prices]
         returns = daily_returns(closes)
         years = max((len(closes) - 1) / 252, 1 / 252)
@@ -168,7 +172,7 @@ class CalculationEngine:
                     "quantity": round(row["quantity"], 4),
                     "market_value": round(value, 2),
                     "cost_basis": round(row["cost"] + row["fees"], 2),
-                    "unrealized_return": pct(value / (row["cost"] + row["fees"]) - 1) if row["cost"] else 0,
+                    "unrealized_return": (pct(value / (row["cost"] + row["fees"]) - 1) if row["cost"] else 0),
                     "sector": instrument.get("sector", "Unknown"),
                     "country": instrument.get("country", "Unknown"),
                     "currency": instrument.get("currency", latest.get("currency", "USD")),
@@ -181,7 +185,7 @@ class CalculationEngine:
             "total_value": round(total_value, 2),
             "total_cost": round(total_cost, 2),
             "unrealized_return": pct(total_value / total_cost - 1) if total_cost else 0,
-            "net_estimated_return": pct((total_value - total_cost) / total_cost) if total_cost else 0,
+            "net_estimated_return": (pct((total_value - total_cost) / total_cost) if total_cost else 0),
             "top5_concentration": pct(top5 / total_value) if total_value else 0,
             "positions": positions,
         }

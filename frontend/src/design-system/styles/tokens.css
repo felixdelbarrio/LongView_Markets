@@ -1,0 +1,31 @@
+:root {
+  --color-canvas: 244 247 251;
+  --color-panel: 255 255 255;
+  --color-elevated: 249 251 255;
+  --color-text: 15 28 45;
+  --color-muted: 92 106 126;
+  --color-line: 212 222 235;
+  --color-line-strong: 169 184 205;
+  --color-accent: 44 113 232;
+  --color-teal: 20 164 145;
+  --color-amber: 211 142 41;
+  --color-success: 24 146 95;
+  --color-danger: 202 67 80;
+  color-scheme: light;
+}
+
+.dark {
+  --color-canvas: 7 14 28;
+  --color-panel: 13 25 45;
+  --color-elevated: 18 34 58;
+  --color-text: 232 239 249;
+  --color-muted: 148 163 184;
+  --color-line: 38 56 82;
+  --color-line-strong: 76 99 135;
+  --color-accent: 84 147 255;
+  --color-teal: 55 211 188;
+  --color-amber: 242 194 92;
+  --color-success: 56 188 130;
+  --color-danger: 244 97 108;
+  color-scheme: dark;
+}

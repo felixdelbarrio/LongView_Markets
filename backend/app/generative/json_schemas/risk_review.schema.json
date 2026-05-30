@@ -1,0 +1,1 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "risk_review", "type": "object", "required": ["schema_version", "generated_at", "limitations", "not_financial_advice"], "additionalProperties": true }

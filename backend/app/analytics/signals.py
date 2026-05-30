@@ -25,7 +25,10 @@ class SignalEngine:
                     "Bullish 50/200 moving-average structure",
                     "trend",
                     "low",
-                    {"ma50": metrics.get("moving_average_50"), "ma200": metrics.get("moving_average_200")},
+                    {
+                        "ma50": metrics.get("moving_average_50"),
+                        "ma200": metrics.get("moving_average_200"),
+                    },
                 )
             )
         if metrics.get("volatility", 0) > 28:
@@ -61,7 +64,12 @@ class SignalEngine:
         return signals
 
     def _signal(
-        self, ticker: str, title: str, category: str, severity: str, evidence: dict[str, Any]
+        self,
+        ticker: str,
+        title: str,
+        category: str,
+        severity: str,
+        evidence: dict[str, Any],
     ) -> dict[str, Any]:
         return {
             "id": f"{ticker}-{title.lower().replace(' ', '-')}",

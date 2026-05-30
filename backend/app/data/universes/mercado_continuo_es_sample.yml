@@ -1,0 +1,3 @@
+name: Mercado Continuo ES sample
+description: Muestra española para pruebas de sincronización.
+tickers: [BBVA.MC, SAN.MC, ITX.MC, IBE.MC, REP.MC, TEF.MC]

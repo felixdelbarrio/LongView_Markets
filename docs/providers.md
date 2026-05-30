@@ -1,5 +1,7 @@
 # Providers
 
+Default market provider is `yfinance`; secondary provider is `stooq`; news provider is RSS-compatible. Free-provider failures fall back explicitly when `MOCK_FALLBACK_ENABLED=true`, and responses mark source/data kind so users can distinguish observed, cached and mock data.
+
 The provider interface supports instrument search, daily prices, dividends and company profiles. MockProvider works without API keys; external providers are swappable placeholders for v2.
 
 ## Operating Principle

@@ -38,4 +38,12 @@ describe("LongView Markets", () => {
     renderApp("/settings");
     expect(await screen.findByText("Settings")).toBeInTheDocument();
   });
+
+  it("renders operational portfolio and generative ingestion pages", async () => {
+    renderApp("/my-portfolio");
+    expect(await screen.findByRole("heading", { name: "Mi cartera" })).toBeInTheDocument();
+    expect(screen.getByText("Nueva operación")).toBeInTheDocument();
+    renderApp("/generative-ingestion");
+    expect(await screen.findByText("GPT en JSON estricto")).toBeInTheDocument();
+  });
 });

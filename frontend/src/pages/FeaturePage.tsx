@@ -16,6 +16,9 @@ export type FeaturePageConfig = {
 };
 
 function normalizeItems(data: unknown): Array<Record<string, unknown>> {
+  if (data && typeof data === "object" && "data" in data) {
+    return normalizeItems((data as { data: unknown }).data);
+  }
   if (Array.isArray(data)) return data as Array<Record<string, unknown>>;
   if (data && typeof data === "object") {
     const record = data as Record<string, unknown>;
