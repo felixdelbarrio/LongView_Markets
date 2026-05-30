@@ -1,6 +1,6 @@
 # Launcher
 
-The development launcher seeds data, starts backend and frontend, writes PID files, prints useful URLs and lets `make kill` stop only LongView processes.
+The development launcher seeds data, starts backend and frontend, writes PID files, opens a native WebView app frame, and lets `make kill` stop only LongView processes. It does not open the system browser automatically. The local URLs remain internal diagnostics for engineers.
 
 ## Operating Principle
 

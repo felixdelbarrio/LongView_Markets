@@ -1,6 +1,6 @@
 # Release
 
-Release runs only on push to master. It executes validation, `make ci`, `make build`, packages Windows/Linux/macOS archives with official icons, produces checksums and uploads artifacts. Native PyInstaller binaries are prepared as a documented follow-up when runner support is stable.
+Release runs only on push to master. It executes validation, `make ci`, `make build`, packages Windows/Linux/macOS archives with official icons, produces checksums and uploads artifacts. Packaged start scripts run `app.launcher`, which serves the compiled frontend locally and opens a native WebView app frame instead of an external browser. Native signed PyInstaller binaries are prepared as a documented follow-up when runner support is stable.
 
 ## Operating Principle
 

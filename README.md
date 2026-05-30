@@ -25,11 +25,13 @@ make install
 make run
 ```
 
-`make run` starts backend and frontend from one terminal, initializes `.env`, SQLite and Parquet seed data, stores PID files and prints:
+`make run` starts backend and frontend from one terminal, initializes `.env`, SQLite and Parquet seed data, stores PID files and opens LongView Markets in a native WebView app frame instead of an external browser.
 
-- Frontend: http://localhost:5173
-- Backend: http://localhost:8000
-- API docs: http://localhost:8000/docs
+The internal service URLs remain available for diagnostics:
+
+- Frontend: http://127.0.0.1:5173
+- Backend: http://127.0.0.1:8000
+- API docs: http://127.0.0.1:8000/docs
 
 Stop only LongView processes with:
 
@@ -40,7 +42,7 @@ make kill
 ## Make Commands
 
 - `make install`: backend and frontend dependencies, `.env`, SQLite and seed data.
-- `make run`: one-command local launch with backend, frontend, PID files and logs.
+- `make run`: one-command local launch with backend, frontend, PID files, logs and a native WebView app frame.
 - `make build`: validates backend, compiles frontend and creates local release archives.
 - `make clean`: removes caches, build outputs, logs and PID files without deleting user data.
 - `make kill`: stops only processes started by `make run`.
@@ -66,7 +68,7 @@ The app is a monorepo:
 - `backend/`: FastAPI, Pydantic v2, Polars, PyArrow, DuckDB, SQLModel/SQLite, APScheduler-ready jobs, Typer CLI and pytest.
 - `frontend/`: React, TypeScript, Vite, Tailwind CSS, shadcn-style local primitives, Recharts, Framer Motion, Lucide, TanStack Query, Zustand, i18next, React Hook Form, Zod, Vitest and Playwright smoke coverage.
 - `data/`: deterministic seed JSON, SQLite metadata and generated Parquet lake.
-- `scripts/`: one-command launcher, kill script, packaging and validation helpers.
+- `scripts/`: one-command WebView launcher, kill script, packaging and validation helpers.
 - `.github/`: separate CI, security, coverage, docs, CodeQL, Dependabot and release workflows.
 
 ## Data Model and Parquet
@@ -79,7 +81,7 @@ Critical financial metrics are centralized in `backend/app/analytics/calculation
 
 ## Launcher and Packaging
 
-`make run` hides backend/frontend complexity during development. `make build` compiles the frontend and creates Windows, Linux and macOS archives in `dist/` with launcher scripts, backend code, compiled frontend, `.env.example`, checksums and official LongView icon assets. The release workflow runs only on pushes to `master` per the v1 release rule.
+`make run` hides backend/frontend complexity during development and presents the product in a self-contained WebView application frame. `make build` compiles the frontend and creates Windows, Linux and macOS archives in `dist/` with WebView launcher scripts, backend code, compiled frontend, `.env.example`, checksums and official LongView icon assets. The repository follows GitFlow with `master` as the production/default branch and `develop` as the integration branch. The release workflow runs only on pushes to `master` per the release rule.
 
 ## Security
 

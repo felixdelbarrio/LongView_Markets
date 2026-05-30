@@ -2,7 +2,7 @@ name: Security
 on:
   pull_request:
   push:
-    branches: [main, master]
+    branches: [develop, master]
 jobs:
   security:
     runs-on: ubuntu-latest
