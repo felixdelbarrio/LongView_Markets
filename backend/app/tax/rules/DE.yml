@@ -1,0 +1,9 @@
+country: Germany
+rules:
+  - tax_type: dividends_and_capital_gains
+    range: v1_demo_estimate
+    rate: 0.26375
+    effective_from: "2026-01-01"
+    source: "Placeholder rule for LongView v1 demo. Verify with official tax authority."
+    confidence: 0.45
+    notes: "Orientative estimate only; professional advice required."
