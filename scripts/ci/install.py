@@ -16,6 +16,10 @@ def venv_python() -> Path:
     return VENV / "bin" / "python"
 
 
+def npm() -> str:
+    return "npm.cmd" if os.name == "nt" else "npm"
+
+
 def run(command: list[str], cwd: Path = ROOT) -> None:
     subprocess.run(command, cwd=cwd, check=True)
 
@@ -26,7 +30,7 @@ def main() -> int:
     python = venv_python()
     run([str(python), "-m", "pip", "install", "--upgrade", "pip"])
     run([str(python), "-m", "pip", "install", "-e", "backend[dev]"])
-    run(["npm", "--prefix", "frontend", "install"])
+    run([npm(), "--prefix", "frontend", "install"])
     env = ROOT / ".env"
     if not env.exists():
         shutil.copy(ROOT / ".env.example", env)

@@ -14,6 +14,16 @@ FRONTEND_URL = "http://127.0.0.1:5173"
 BACKEND_URL = "http://127.0.0.1:8000"
 
 
+def venv_python() -> Path:
+    if os.name == "nt":
+        return ROOT / ".venv" / "Scripts" / "python.exe"
+    return ROOT / ".venv" / "bin" / "python"
+
+
+def npm() -> str:
+    return "npm.cmd" if os.name == "nt" else "npm"
+
+
 def ensure_env() -> None:
     env = ROOT / ".env"
     if not env.exists():
@@ -78,7 +88,7 @@ def open_app_frame(url: str) -> int:
 def main() -> int:
     ensure_env()
     stop_existing()
-    backend_python = ROOT / ".venv" / "bin" / "python"
+    backend_python = venv_python()
     if not backend_python.exists():
         print("Missing .venv. Run `make install` first.")
         return 1
@@ -105,7 +115,7 @@ def main() -> int:
     )
     frontend = start(
         "frontend",
-        ["npm", "run", "dev", "--", "--host", "127.0.0.1", "--port", "5173"],
+        [npm(), "run", "dev", "--", "--host", "127.0.0.1", "--port", "5173"],
         ROOT / "frontend",
     )
     time.sleep(2)

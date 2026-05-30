@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import platform
 import subprocess
 import sys
@@ -11,6 +12,10 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def run(command: list[str], cwd: Path = ROOT) -> None:
     subprocess.run(command, cwd=cwd, check=True)
+
+
+def npm() -> str:
+    return "npm.cmd" if os.name == "nt" else "npm"
 
 
 def build_windows_exe() -> Path:
@@ -58,7 +63,7 @@ def main() -> int:
     )
     parser.add_argument("--with-pyinstaller", action="store_true")
     args = parser.parse_args()
-    run(["npm", "--prefix", "frontend", "run", "build"])
+    run([npm(), "--prefix", "frontend", "run", "build"])
     if args.with_pyinstaller and args.platform == "windows":
         build_windows_exe()
     run(
