@@ -18,7 +18,7 @@ class DividendEngine:
         self, dividends: list[dict[str, Any]], latest_prices: dict[str, dict[str, Any]]
     ) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
-        today = date(2026, 5, 30)
+        today = date.today()
         for dividend in dividends:
             ticker = dividend["ticker"]
             price = latest_prices.get(ticker, {}).get("close", 0) or 0

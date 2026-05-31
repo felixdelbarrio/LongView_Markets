@@ -1,6 +1,6 @@
 # Launcher
 
-The development launcher seeds data, starts backend and frontend, writes PID files, opens a native WebView app frame, and lets `make kill` stop only LongView processes. It does not open the system browser automatically. The local URLs remain internal diagnostics for engineers.
+The development launcher seeds data, initializes SQLite and Parquet, starts backend and frontend, writes PID files, opens a native WebView app frame, and lets `make kill` stop only LongView processes. It does not open the system browser automatically. The packaged launcher detects PyInstaller runtime paths, serves the compiled frontend through FastAPI, initializes local data if missing and uses the official LongView icon.
 
 ## Operating Principle
 

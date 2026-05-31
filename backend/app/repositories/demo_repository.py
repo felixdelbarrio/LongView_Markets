@@ -364,7 +364,10 @@ def get_instruments() -> list[dict[str, Any]]:
 
 def get_instrument(ticker: str) -> dict[str, Any] | None:
     normalized = ticker.upper()
-    return next((item for item in get_instruments() if item["ticker"].upper() == normalized), None)
+    return next(
+        (item for item in get_instruments() if item["ticker"].upper() == normalized),
+        None,
+    )
 
 
 @cache
@@ -469,7 +472,11 @@ def get_news(ticker: str | None = None) -> list[dict[str, Any]]:
             "faces higher input costs and currency headwinds in the next two quarters",
             "negative",
         ),
-        ("dividend calendar", "confirms a regular dividend event with moderate estimated yield", "neutral"),
+        (
+            "dividend calendar",
+            "confirms a regular dividend event with moderate estimated yield",
+            "neutral",
+        ),
         (
             "data quality watch",
             "has one provider with stale volume data and should be reviewed before acting",
@@ -581,7 +588,10 @@ def get_watchlists() -> list[dict[str, Any]]:
             "id": "quality-tech",
             "name": "Tecnologia calidad",
             "description": "Large compounders with strong data coverage",
-            "items": [{"ticker": "MSFT", "reason": "quality"}, {"ticker": "ASML.AS", "reason": "moat"}],
+            "items": [
+                {"ticker": "MSFT", "reason": "quality"},
+                {"ticker": "ASML.AS", "reason": "moat"},
+            ],
             "created_at": now,
             "updated_at": now,
         },
@@ -589,7 +599,10 @@ def get_watchlists() -> list[dict[str, Any]]:
             "id": "europe-defensive",
             "name": "Europa defensiva",
             "description": "Lower-volatility European exposures",
-            "items": [{"ticker": "IBE.MC", "reason": "utilities"}, {"ticker": "ALV.DE", "reason": "income"}],
+            "items": [
+                {"ticker": "IBE.MC", "reason": "utilities"},
+                {"ticker": "ALV.DE", "reason": "income"},
+            ],
             "created_at": now,
             "updated_at": now,
         },
@@ -629,7 +642,11 @@ def get_journal_entries() -> list[dict[str, Any]]:
             "ticker": "BBVA.MC",
             "decision_type": "simulate",
             "thesis": "Dividend capture only makes sense if tax and spread remain controlled.",
-            "risks": ["ex-dividend price adjustment", "withholding tax", "bank cyclicality"],
+            "risks": [
+                "ex-dividend price adjustment",
+                "withholding tax",
+                "bank cyclicality",
+            ],
             "expected_horizon": "90 days",
             "entry_price": require_latest_price("BBVA.MC")["close"],
             "snapshot_metrics": {"confidence": 0.74, "dividend_yield": 0.045},
@@ -704,7 +721,10 @@ def get_markets() -> list[dict[str, Any]]:
         market["change"] += (current - previous) / previous
         market["members"] += 1
         market["leaders"].append(
-            {"ticker": instrument["ticker"], "change": round((current - previous) / previous * 100, 2)}
+            {
+                "ticker": instrument["ticker"],
+                "change": round((current - previous) / previous * 100, 2),
+            }
         )
     for market in markets.values():
         market["change"] = round(market["change"] / max(market["members"], 1) * 100, 2)
@@ -729,7 +749,8 @@ def seed_snapshot() -> dict[str, Any]:
 def ensure_sqlite(data_dir: Path) -> Path:
     data_dir.mkdir(parents=True, exist_ok=True)
     db_path = data_dir / "longview.sqlite"
-    with sqlite3.connect(db_path) as connection:
+    connection = sqlite3.connect(db_path)
+    try:
         connection.execute(
             "CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL)"
         )
@@ -741,6 +762,9 @@ def ensure_sqlite(data_dir: Path) -> Path:
             "INSERT OR REPLACE INTO metadata(key, value, updated_at) VALUES (?, ?, ?)",
             ("app_version", "0.1.0", AS_OF.isoformat()),
         )
+        connection.commit()
+    finally:
+        connection.close()
     return db_path
 
 
@@ -785,6 +809,28 @@ def ensure_demo_files(project_root: Path) -> dict[str, Any]:
         news_target = data_dir / "parquet" / "news" / "year=2026"
         news_target.mkdir(parents=True, exist_ok=True)
         pl.DataFrame(get_news()).write_parquet(news_target / "news.parquet")
+        for relative in [
+            "fx",
+            "portfolio_snapshots/portfolio_id=real/year=2026",
+            "instrument_position_snapshots/portfolio_id=real/ticker=MSFT/year=2026",
+            "forecasts",
+            "signals",
+            "features/entity=portfolio",
+            "features/entity=instrument",
+            "generative/entity=portfolio/year=2026",
+            "generative/entity=instrument/ticker=MSFT/year=2026",
+        ]:
+            target = data_dir / "parquet" / relative
+            target.mkdir(parents=True, exist_ok=True)
+            marker = target / "_READY.json"
+            marker.write_text(
+                json.dumps({"status": "ready", "generated_at": AS_OF.isoformat()}),
+                encoding="utf-8",
+            )
     except Exception as exc:  # pragma: no cover - exercised only when optional parquet stack is missing.
         parquet_status = f"degraded: {exc}"
-    return {"seed": str(seed_path), "sqlite": str(sqlite_path), "parquet": parquet_status}
+    return {
+        "seed": str(seed_path),
+        "sqlite": str(sqlite_path),
+        "parquet": parquet_status,
+    }

@@ -1,0 +1,3 @@
+name: Dow Jones sample
+description: Muestra Dow Jones.
+tickers: [AAPL, MSFT, JPM, KO, JNJ, PG]

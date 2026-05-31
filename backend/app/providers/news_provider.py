@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from app.providers.mock_provider import MockProvider
+from app.providers.yfinance_provider import Provider as YFinanceProvider
 
 
-class Provider(MockProvider):
-    provider_name = "external-placeholder"
+class Provider(YFinanceProvider):
+    provider_name = "yfinance"

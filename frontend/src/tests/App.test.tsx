@@ -30,12 +30,27 @@ describe("LongView Markets", () => {
     expect(document.documentElement.classList.contains("dark")).toBe(true);
   });
 
-  it("renders core pages", async () => {
-    renderApp("/dividend-fisher");
-    expect(await screen.findByText("Dividend fisher")).toBeInTheDocument();
+  it("renders operational core pages", async () => {
+    const dividends = renderApp("/dividends");
+    expect(await screen.findByRole("heading", { name: "Dividendos" })).toBeInTheDocument();
+    dividends.unmount();
+
     renderApp("/tax-advisor");
-    expect(await screen.findByText("Tax advisor")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Asesor fiscal" })).toBeInTheDocument();
     renderApp("/settings");
     expect(await screen.findByText("Settings")).toBeInTheDocument();
+  });
+
+  it("renders operational portfolio, guides and global controls", async () => {
+    renderApp("/my-portfolio");
+    expect(await screen.findByRole("heading", { name: "Mi cartera" })).toBeInTheDocument();
+    expect(screen.getByText("Nueva operación")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Copilot|Executive Demo|Learn/i }),
+    ).not.toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText("Sincronización global"));
+    expect(await screen.findByText("Progreso de ingesta")).toBeInTheDocument();
+    renderApp("/guides");
+    expect(await screen.findByRole("heading", { name: "Guías operativas" })).toBeInTheDocument();
   });
 });

@@ -1,0 +1,3 @@
+name: Nasdaq 100
+description: Muestra de crecimiento US.
+tickers: [AAPL, MSFT, NVDA, GOOGL, AMZN, META, TSLA]

@@ -1,5 +1,7 @@
 # Data Quality
 
+Data Quality reports SQLite, Parquet, provider status, stale price/FX flags, missing rows, ingestion jobs and generative responses pending validation. It is operational state, not a decorative checklist.
+
 Quality checks detect non-positive prices, OHLC inconsistencies, duplicate dates, stale data and provider confidence. The frontend displays global and provider status.
 
 ## Operating Principle

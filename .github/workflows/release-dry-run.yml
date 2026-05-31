@@ -1,0 +1,64 @@
+name: Release Dry Run
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  release-dry-run-linux:
+    name: release-dry-run-linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: python -m pip install --upgrade pip
+      - run: python scripts/ci/install.py
+      - run: python scripts/ci/run_checks.py
+      - run: python scripts/ci/run_venv.py scripts/release/build_release.py --platform linux
+      - run: python scripts/release/check_release_artifacts.py --platform linux
+
+  release-dry-run-windows:
+    name: release-dry-run-windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: python -m pip install --upgrade pip
+      - run: python scripts/ci/install.py
+      - run: python scripts/ci/run_checks.py
+      - run: python scripts/ci/run_venv.py scripts/release/build_release.py --platform windows --with-pyinstaller
+      - run: python scripts/release/check_release_artifacts.py --platform windows
+
+  release-dry-run-macos:
+    name: release-dry-run-macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: python -m pip install --upgrade pip
+      - run: python scripts/ci/install.py
+      - run: python scripts/ci/run_checks.py
+      - run: python scripts/ci/run_venv.py scripts/release/build_release.py --platform macos
+      - run: python scripts/release/check_release_artifacts.py --platform macos

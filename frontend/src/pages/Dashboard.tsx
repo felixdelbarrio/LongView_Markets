@@ -1,145 +1,144 @@
-import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Plus, RefreshCw } from "lucide-react";
+import { Link } from "react-router-dom";
 import { api } from "../services/api";
-import { MetricCard } from "../components/financial/MetricCard";
-import { ConfidenceBadge, RiskBadge, SourceBadge } from "../components/financial/Badges";
-import { Card } from "../components/ui/card";
+import { Button } from "../design-system/components/Button";
+import { Card } from "../design-system/components/Card";
+import { DataQualityBadge } from "../design-system/components/DataQualityBadge";
+import { DataTable } from "../design-system/components/DataTable";
+import { EmptyState } from "../design-system/components/EmptyState";
+import { MetricCard } from "../design-system/components/MetricCard";
+import { PageHeader } from "../design-system/components/PageHeader";
+import { Section } from "../design-system/components/Section";
 import { formatMoney, formatPercent } from "../lib/utils";
-import { MarketHeatmap } from "../components/financial/MarketHeatmap";
-import { PortfolioAllocationChart } from "../components/charts/PortfolioAllocationChart";
-import { Sparkline } from "../components/charts/Sparkline";
 
 export function Dashboard() {
-  const { t } = useTranslation();
-  const { data } = useQuery({ queryKey: ["dashboard"], queryFn: api.dashboard });
+  const queryClient = useQueryClient();
+  const { data: result } = useQuery({ queryKey: ["dashboard"], queryFn: api.dashboard });
+  const syncMarkets = useMutation({
+    mutationFn: api.syncMarkets,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
+  });
+  const data = result?.data;
   if (!data) {
-    return <div className="h-96 animate-pulse rounded-lg bg-panel" />;
+    return (
+      <PageHeader
+        eyebrow="Operativa"
+        title="Centro de decisiones"
+        description="Backend no disponible. Revisa make run y vuelve a cargar la aplicación."
+        source="none"
+      />
+    );
   }
-  const spark = data.opportunities.map((item, index) => ({
-    value: Number(item.cagr ?? index) + 20,
-  }));
+  const emptyPortfolio = Boolean(data.empty_portfolio);
+  const risk = (data.risk ?? {}) as Record<string, unknown>;
+  const hero = data.hero;
+  const marketRows = data.market_pulse ?? [];
   return (
     <div className="space-y-6">
-      <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden rounded-lg border border-line bg-panel p-6 shadow-glow"
+      <PageHeader
+        eyebrow="Operativa real"
+        title="Centro de decisiones"
+        description={String(data.narrative)}
+        source={String(data.lineage?.source ?? "backend")}
       >
-        <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <SourceBadge kind={data.lineage.data_kind} />
-              <ConfidenceBadge value={data.lineage.confidence} />
-              <RiskBadge value={data.hero.aggregate_risk} />
+        {emptyPortfolio ? (
+          <div className="flex flex-wrap gap-2">
+            <Link to="/my-portfolio">
+              <Button>
+                <Plus size={17} /> Añade tu primera operación
+              </Button>
+            </Link>
+            <Button onClick={() => syncMarkets.mutate()} disabled={syncMarkets.isPending}>
+              <RefreshCw size={17} /> Sincronizar mercados
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-4">
+            <MetricCard
+              label="Valor total"
+              value={formatMoney(Number(hero.portfolio_value ?? 0))}
+            />
+            <MetricCard
+              label="Rentabilidad"
+              value={formatPercent(Number(hero.total_return ?? 0))}
+            />
+            <MetricCard
+              label="PyG diario"
+              value={formatPercent(Number(risk.daily_change_pct ?? 0))}
+            />
+            <MetricCard label="Dividendos" value={String(hero.upcoming_dividends ?? 0)} />
+          </div>
+        )}
+      </PageHeader>
+
+      {emptyPortfolio ? (
+        <EmptyState message="Todavía no hay cartera. LongView usará tus operaciones reales para calcular valoración, histórico, PyG, dividendos y riesgo." />
+      ) : null}
+
+      <Section title="Market Pulse">
+        <Card>
+          {data.market_pulse_status === "pending_sync" ? (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-muted">Mercados pendientes de sincronizar</p>
+              <Button onClick={() => syncMarkets.mutate()} disabled={syncMarkets.isPending}>
+                <RefreshCw size={17} /> Sincronizar mercados
+              </Button>
             </div>
-            <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-normal md:text-6xl">
-              {t("dashboard.title")}
-            </h1>
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-muted">{t("app.subtitle")}</p>
-            <p className="mt-5 rounded-md border border-amber/40 bg-amber/10 p-4 text-sm font-semibold text-amber">
-              {data.narrative}
-            </p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            <MetricCard
-              label="Valor cartera"
-              value={formatMoney(data.hero.portfolio_value)}
-              detail="Total calculado en backend con datos seed y precios diarios."
-            />
-            <MetricCard
-              label="Rentabilidad total"
-              value={formatPercent(data.hero.total_return)}
-              detail="No promete resultados futuros; usa coste y precio de cierre demo."
-              tone="teal"
+          ) : null}
+          <div className="mt-4">
+            <DataTable
+              rows={marketRows.slice(0, 12).map((row) => ({
+                mercado: row.market,
+                universo: row.universe_id,
+                miembros: row.members,
+                estado: row.status,
+                precios: row.rows_prices,
+                proveedor: row.provider,
+                actualizado: row.last_updated_at,
+              }))}
             />
           </div>
-        </div>
-      </motion.section>
+        </Card>
+      </Section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="YTD"
-          value={formatPercent(data.hero.ytd_return)}
-          detail="Rentabilidad desde inicio de año calculada en backend."
-        />
-        <MetricCard
-          label="Dividendos próximos"
-          value={String(data.hero.upcoming_dividends)}
-          detail="Eventos mock del calendario de dividendos."
-          tone="amber"
-        />
-        <MetricCard
-          label="Alertas críticas"
-          value={String(data.hero.critical_alerts)}
-          detail="Alertas explicables con evidencia y confianza."
-          tone="amber"
-        />
-        <MetricCard
-          label="Datos"
-          value={data.hero.data_status}
-          detail="Estado de Parquet, SQLite y proveedores locales."
-          tone="teal"
-        />
+        <MetricCard label="Calidad de datos" value={String(hero.data_status)} />
+        <MetricCard label="Alertas" value={String(hero.critical_alerts)} />
+        <MetricCard label="Universos" value={String(marketRows.length)} />
+        <MetricCard label="Modo cartera" value={emptyPortfolio ? "vacía" : "calculada"} />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1fr_0.85fr]">
-        <Card>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Market Pulse</h2>
-            <SourceBadge kind="mock" />
-          </div>
-          <MarketHeatmap rows={data.opportunities} />
-        </Card>
-        <Card>
-          <h2 className="text-2xl font-bold">Riesgo de cartera</h2>
-          <PortfolioAllocationChart positions={data.risk.positions} />
-          <p className="text-sm text-muted">
-            Concentración top 5: {formatPercent(data.risk.top5_concentration)}
-          </p>
-        </Card>
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-3">
-        <Card>
-          <h2 className="text-xl font-bold">Oportunidades</h2>
-          <Sparkline data={spark} />
-          <div className="mt-4 space-y-3">
-            {data.opportunities.slice(0, 5).map((item) => (
-              <div
-                key={String(item.ticker)}
-                className="rounded-md border border-line bg-canvas/50 p-3"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <strong>{String(item.ticker)}</strong>
-                  <ConfidenceBadge value={Number(item.confidence ?? 0.78)} />
+      <section className="grid gap-6 xl:grid-cols-[1fr_0.8fr]">
+        <Section title="Inteligencia proactiva">
+          <Card>
+            <p className="text-sm leading-6 text-muted">
+              {String(data.proactive_intelligence?.summary ?? "")}
+            </p>
+            <div className="mt-4 grid gap-2">
+              {(data.proactive_intelligence?.questions ?? []).map((question: string) => (
+                <div key={question} className="rounded-md border border-line bg-canvas p-3 text-sm">
+                  {question}
                 </div>
-                <p className="mt-1 text-sm text-muted">
-                  {String(item.name ?? item.sector)} · CAGR {String(item.cagr ?? "n/a")}% · Vol{" "}
-                  {String(item.volatility ?? "n/a")}%
-                </p>
-              </div>
-            ))}
-          </div>
-        </Card>
-        <Card>
-          <h2 className="text-xl font-bold">Disciplina inversora</h2>
-          <ul className="mt-4 space-y-3 text-sm text-muted">
-            <li>{data.discipline.journal_reviews.length} tesis pendientes de revisar</li>
-            <li>{data.discipline.watchlists.length} watchlists activas</li>
-            <li>{data.discipline.simulations.length} simulaciones abiertas</li>
-          </ul>
-        </Card>
-        <Card>
-          <h2 className="text-xl font-bold">Copiloto externo</h2>
-          <div className="mt-4 space-y-3">
-            {data.copilot.questions.map((question) => (
-              <p key={question} className="rounded-md border border-line bg-canvas/50 p-3 text-sm">
-                {question}
-              </p>
-            ))}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        </Section>
+        <Section title="Datos y trazabilidad">
+          <Card>
+            <div className="flex flex-wrap items-center gap-2">
+              <DataQualityBadge flags={risk.quality_flags as string[] | undefined} />
+            </div>
+            <DataTable
+              rows={[
+                { campo: "fuente", valor: data.lineage?.source },
+                { campo: "tipo", valor: data.lineage?.data_kind },
+                { campo: "confianza", valor: data.lineage?.confidence },
+                { campo: "generativa", valor: data.generative_context?.summary },
+              ]}
+            />
+          </Card>
+        </Section>
       </section>
     </div>
   );

@@ -1,0 +1,3 @@
+name: S&P 500 sample
+description: Muestra de large caps US.
+tickers: [AAPL, MSFT, NVDA, GOOGL, AMZN, META, TSLA, BRK-B, JPM, KO, JNJ, PG, PFE, BSX, ACN, COIN]

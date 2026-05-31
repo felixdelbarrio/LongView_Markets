@@ -33,7 +33,9 @@ def test_portfolio_and_simulation_engines() -> None:
         for item in demo_repository.get_instruments()
     }
     summary = SimulationEngine().summarize(
-        demo_repository.get_portfolio_transactions(True), latest, demo_repository.get_instruments()
+        demo_repository.get_portfolio_transactions(True),
+        latest,
+        demo_repository.get_instruments(),
     )
     assert summary["total_value"] > 0
     assert SimulationEngine().convert_to_real({"ticker": "MSFT"})["requires_confirmation"] is True
@@ -64,6 +66,9 @@ def test_dividend_tax_forecast_alert_quality_screener() -> None:
         {item["ticker"]: demo_repository.get_prices(item["ticker"]) for item in instruments[:2]},
     )
     assert quality["global_score"] > 80
+    no_data_quality = QualityEngine().evaluate([], {})
+    assert no_data_quality["global_score"] == 0
+    assert no_data_quality["data_kind"] == "no_data"
     analytics = {"MSFT": CalculationEngine().calculate_price_metrics(demo_repository.get_prices("MSFT"))}
     msft = demo_repository.get_instrument("MSFT")
     assert msft is not None
@@ -71,7 +76,9 @@ def test_dividend_tax_forecast_alert_quality_screener() -> None:
 
 
 def test_watchlist_journal_provider_and_seed(tmp_path: Path) -> None:
-    assert WatchlistEngine().list_watchlists()
+    assert WatchlistEngine().list_watchlists() == []
+    assert WatchlistEngine().create({"name": "Ideas"})["status"] == "created"
+    assert JournalEngine().list_entries() == []
     assert JournalEngine().create({"ticker": "MSFT"})["ticker"] == "MSFT"
     provider = MockProvider()
     assert provider.search_instruments("apple")
