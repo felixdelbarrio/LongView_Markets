@@ -22,6 +22,7 @@ REQUIRED = [
     "testing.md",
     "release.md",
     "ci-cd.md",
+    "branch-protection.md",
     "makefile.md",
     "data-quality.md",
     "screener.md",

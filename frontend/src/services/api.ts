@@ -65,7 +65,12 @@ export const api = {
   portfolioAnnual: () => request<Record<string, unknown>>("/portfolio/annual"),
   portfolioMonthly: () => request<Record<string, unknown>>("/portfolio/monthly"),
   simulatedPortfolio: () => request<Record<string, unknown>>("/simulated-portfolio"),
+  simulatedTransactions: () =>
+    request<Array<Record<string, unknown>>>("/simulated-portfolio/transactions"),
+  createSimulatedTransaction: (payload: Record<string, unknown>) =>
+    request<Record<string, unknown>>("/simulated-portfolio/transactions", jsonPost(payload)),
   dividends: () => request<Array<Record<string, unknown>>>("/dividends/opportunities"),
+  taxRelevantEvents: () => request<Record<string, unknown>>("/tax/relevant-events"),
   taxRules: () => request<Array<Record<string, unknown>>>("/tax/rules"),
   forecasting: (ticker = "MSFT") =>
     request<Record<string, unknown>>(`/forecasting/instruments/${ticker}`),
@@ -73,9 +78,13 @@ export const api = {
   quality: () => request<Record<string, unknown>>("/data-quality"),
   screener: () => request<Record<string, unknown>>("/screener"),
   watchlists: () => request<Array<Record<string, unknown>>>("/watchlists"),
+  createWatchlist: (payload: Record<string, unknown>) =>
+    request<Record<string, unknown>>("/watchlists", jsonPost(payload)),
+  addWatchlistItem: (watchlistId: string, payload: Record<string, unknown>) =>
+    request<Record<string, unknown>>(`/watchlists/${watchlistId}/items`, jsonPost(payload)),
   journal: () => request<Array<Record<string, unknown>>>("/journal"),
-  playbooks: () => request<Array<Record<string, unknown>>>("/playbooks"),
-  copilot: (ticker = "MSFT") => request<Record<string, unknown>>(`/copilot/context/${ticker}`),
+  createJournal: (payload: Record<string, unknown>) =>
+    request<Record<string, unknown>>("/journal", jsonPost(payload)),
   instruments: () => request<Array<Record<string, unknown>>>("/instruments"),
   instrument: (ticker = "MSFT") => request<Record<string, unknown>>(`/instruments/${ticker}`),
   alerts: () => request<Array<Record<string, unknown>>>("/alerts"),
@@ -87,7 +96,14 @@ export const api = {
     request<Record<string, unknown>>("/settings", jsonPost(payload)),
   universes: () => request<Array<Record<string, unknown>>>("/universes"),
   ingestionJobs: () => request<Array<Record<string, unknown>>>("/ingestion/jobs"),
+  syncMarkets: () =>
+    request<Record<string, unknown>>("/ingestion/sync-default-universes", jsonPost({})),
+  syncFx: () => request<Record<string, unknown>>("/ingestion/sync-fx", jsonPost({})),
+  syncNews: () => request<Record<string, unknown>>("/ingestion/sync-news", jsonPost({})),
   syncPortfolio: () => request<Record<string, unknown>>("/ingestion/sync-portfolio", jsonPost({})),
+  runDailyClose: () => request<Record<string, unknown>>("/ingestion/run-daily-close", jsonPost({})),
+  syncTicker: (ticker: string) =>
+    request<Record<string, unknown>>("/ingestion/sync-ticker", jsonPost({ ticker })),
   generativePrompts: () => request<Array<Record<string, unknown>>>("/generative/prompts"),
   generativeJobs: () => request<Array<Record<string, unknown>>>("/generative/jobs"),
   createGenerativeJob: (payload: Record<string, unknown>) =>

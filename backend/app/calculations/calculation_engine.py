@@ -39,7 +39,7 @@ class OperationalCalculationEngine:
             "calculation_version": CALCULATION_ENGINE_VERSION,
             "calculated_at": datetime.now(UTC).isoformat(),
             "inputs_summary": {"transactions": len(transactions), "days": len(rows)},
-            "data_sources": ["sqlite", "parquet_or_seed_prices", "fx_cache"],
+            "data_sources": ["sqlite", "parquet_prices", "fx_cache"],
             "warnings": [],
             "quality_flags": sorted({flag for row in rows for flag in row.get("data_quality_flags", [])}),
         }
@@ -64,7 +64,7 @@ class OperationalCalculationEngine:
             "calculation_version": CALCULATION_ENGINE_VERSION,
             "calculated_at": datetime.now(UTC).isoformat(),
             "inputs_summary": {"transactions": len(transactions), "days": len(rows)},
-            "data_sources": ["sqlite", "parquet_or_seed_prices", "fx_cache"],
+            "data_sources": ["sqlite", "parquet_prices", "fx_cache"],
             "warnings": [],
             "quality_flags": sorted({flag for row in rows for flag in row.get("data_quality_flags", [])}),
         }
@@ -134,7 +134,7 @@ class OperationalCalculationEngine:
             "calculation_version": CALCULATION_ENGINE_VERSION,
             "calculated_at": generated_at.isoformat(),
             "inputs_summary": {"price_rows": len(prices)},
-            "data_sources": ["parquet_or_seed_prices"],
+            "data_sources": ["parquet_prices"],
             "warnings": [],
             "quality_flags": ["forecast_uncertainty"],
         }

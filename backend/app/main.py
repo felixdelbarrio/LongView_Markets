@@ -14,11 +14,9 @@ from app.core.constants import APP_NAME
 from app.core.logging import configure_logging
 from app.core.security import SecurityHeadersMiddleware, SimpleRateLimitMiddleware
 from app.db.database import ensure_database
-from app.repositories import demo_repository
 
 configure_logging()
 settings = get_settings()
-demo_repository.ensure_demo_files(settings.project_root)
 ensure_database(settings.database_path)
 
 app = FastAPI(

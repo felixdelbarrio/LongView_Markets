@@ -24,7 +24,7 @@ class PortfolioNewsImpactEngine:
                     "confidence": item.get("confidence", 0.6),
                     "explanation": "Priorizado por peso en cartera, alertas y disponibilidad de contexto.",
                     "generative_context_available": True,
-                    "data_kind": "observed_or_mock",
+                    "data_kind": "observed_or_cached",
                 }
             )
         return sorted(rows, key=lambda row: float(row["portfolio_weight"]), reverse=True)

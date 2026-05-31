@@ -82,6 +82,6 @@ class SignalEngine:
             "evidence": evidence,
             "confidence": 0.78,
             "generated_at": datetime.now(UTC).isoformat(),
-            "data_sources": ["LongView deterministic seed"],
+            "data_sources": ["LongView market cache"],
             "limitations": ["Demo data, not investment advice."],
         }

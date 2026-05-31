@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from app.repositories import demo_repository
+from typing import Any
 
 
 class NewsEngine:
-    def list_news(self, ticker: str | None = None) -> list[dict[str, object]]:
-        return demo_repository.get_news(ticker)
+    def list_news(self, ticker: str | None = None) -> list[dict[str, Any]]:
+        return []

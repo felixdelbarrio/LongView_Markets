@@ -11,12 +11,23 @@ class QualityEngine:
         instruments: list[dict[str, Any]],
         prices_by_ticker: dict[str, list[dict[str, Any]]],
     ) -> dict[str, Any]:
+        if not instruments or not any(prices_by_ticker.values()):
+            return {
+                "global_score": 0,
+                "status": "sin datos suficientes",
+                "providers": {},
+                "issues": [],
+                "data_kind": "no_data",
+                "explanation": "No hay ingesta observada suficiente para evaluar calidad de datos.",
+            }
         issues: list[dict[str, Any]] = []
         provider_scores: dict[str, list[float]] = {}
         for instrument in instruments:
             ticker = instrument["ticker"]
             rows = prices_by_ticker.get(ticker, [])
-            provider_scores.setdefault(instrument["provider"], []).append(instrument["data_quality_score"])
+            provider_scores.setdefault(instrument["provider"], []).append(
+                float(instrument.get("data_quality_score", 0) or 0)
+            )
             seen_dates: set[str] = set()
             for row in rows[-260:]:
                 for warning in validate_ohlc(row):
@@ -52,7 +63,8 @@ class QualityEngine:
             for provider, scores in provider_scores.items()
         }
         global_score = round(
-            sum(item["data_quality_score"] for item in instruments) / max(len(instruments), 1),
+            sum(float(item.get("data_quality_score", 0) or 0) for item in instruments)
+            / max(len(instruments), 1),
             2,
         )
         return {
@@ -60,6 +72,6 @@ class QualityEngine:
             "status": "ready" if global_score >= 85 else "review",
             "providers": provider_status,
             "issues": issues[:50],
-            "data_kind": "mock",
+            "data_kind": "observed",
             "explanation": "Quality checks cover missing data, duplicates, OHLC consistency and stale data.",
         }

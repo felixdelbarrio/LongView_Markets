@@ -38,8 +38,6 @@ def build_windows_exe() -> Path:
             "--add-data",
             ".env.example;.",
             "--add-data",
-            "data/seed;data/seed",
-            "--add-data",
             "backend/app/data;backend/app/data",
             "--add-data",
             "scripts/package/assets;assets",

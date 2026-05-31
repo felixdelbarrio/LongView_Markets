@@ -5,7 +5,6 @@ from pathlib import Path
 import typer
 
 from app.db.database import ensure_database
-from app.repositories.demo_repository import ensure_demo_files
 
 app = typer.Typer(help="LongView Markets internal CLI")
 
@@ -13,9 +12,15 @@ app = typer.Typer(help="LongView Markets internal CLI")
 @app.command()
 def seed(project_root: Path = typer.Option(Path(".."), help="Repository root")) -> None:
     root = project_root.resolve()
-    status = ensure_demo_files(root)
-    ensure_database(root / "data" / "longview.sqlite")
-    typer.echo(f"Seed data ready: {status}")
+    database = ensure_database(root / "data" / "longview.sqlite")
+    (root / "data" / "parquet").mkdir(parents=True, exist_ok=True)
+    typer.echo(
+        {
+            "sqlite": str(database),
+            "parquet": "ready",
+            "demo_mode": "disabled",
+        }
+    )
 
 
 if __name__ == "__main__":

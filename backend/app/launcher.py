@@ -10,7 +10,6 @@ from typing import Any
 from urllib.parse import urlparse
 
 from app.db.database import ensure_database
-from app.repositories.demo_repository import ensure_demo_files
 
 APP_TITLE = "LongView Markets"
 
@@ -31,7 +30,6 @@ def ensure_local_runtime(root: Path) -> None:
     env_example = root / ".env.example"
     if not env.exists() and env_example.exists():
         env.write_text(env_example.read_text(encoding="utf-8"), encoding="utf-8")
-    ensure_demo_files(root)
     ensure_database(root / "data" / "longview.sqlite")
 
 

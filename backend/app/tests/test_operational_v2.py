@@ -152,6 +152,7 @@ def test_ingestion_universes_settings_and_release_related_endpoints() -> None:
     assert client.post("/api/v1/ingestion/run-daily-close").json()["status"] == "completed"
     assert client.get("/api/v1/providers/status").json()
     assert client.get("/api/v1/fx/rates").json()
-    assert client.get("/api/v1/news/portfolio").json()
+    assert isinstance(client.get("/api/v1/news/portfolio").json(), list)
+    assert client.get("/api/v1/data-quality").json()["global_score"] == 0
     settings = client.post("/api/v1/settings", json={"theme": "dark", "generative_mode": "manual_url"}).json()
     assert settings["settings"]["generative_mode"] == "manual_url"

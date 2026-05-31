@@ -105,6 +105,44 @@ PORTFOLIO_CONTEXT_ANALYSIS_SCHEMA: dict[str, Any] = {
 }
 
 
+NEWS_SENTIMENT_ANALYSIS_SCHEMA: dict[str, Any] = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "news_sentiment_analysis",
+    "type": "object",
+    "additionalProperties": False,
+    "required": [
+        "schema_version",
+        "analysis_type",
+        "ticker",
+        "news_id",
+        "generated_at",
+        "sentiment",
+        "impact",
+        "time_horizon",
+        "confidence",
+        "summary",
+        "evidence",
+        "risks",
+        "not_financial_advice",
+    ],
+    "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "analysis_type": {"const": "news_sentiment_analysis"},
+        "ticker": {"type": "string"},
+        "news_id": {"type": "string"},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "sentiment": {"enum": ["positive", "negative", "neutral", "mixed", "unknown"]},
+        "impact": {"enum": ["low", "medium", "high", "unknown"]},
+        "time_horizon": {"enum": ["intraday", "short_term", "medium_term", "long_term", "unknown"]},
+        "confidence": BASE_DEFINITIONS["confidence"],
+        "summary": {"type": "string"},
+        "evidence": {"type": "array", "items": {"type": "string"}},
+        "risks": {"type": "array", "items": {"type": "string"}},
+        "not_financial_advice": {"const": True},
+    },
+}
+
+
 SCHEMAS: dict[str, dict[str, Any]] = {
     "instrument_context_analysis": INSTRUMENT_CONTEXT_ANALYSIS_SCHEMA,
     "portfolio_context_analysis": PORTFOLIO_CONTEXT_ANALYSIS_SCHEMA,
@@ -115,6 +153,7 @@ SCHEMAS: dict[str, dict[str, Any]] = {
     "daily_market_briefing": PORTFOLIO_CONTEXT_ANALYSIS_SCHEMA,
     "alert_explanation": PORTFOLIO_CONTEXT_ANALYSIS_SCHEMA,
     "investment_thesis_review": INSTRUMENT_CONTEXT_ANALYSIS_SCHEMA,
+    "news_sentiment_analysis": NEWS_SENTIMENT_ANALYSIS_SCHEMA,
 }
 
 

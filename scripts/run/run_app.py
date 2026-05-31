@@ -131,8 +131,8 @@ def main() -> int:
     print(f"Frontend: {FRONTEND_URL}")
     print(f"Backend:  {BACKEND_URL}")
     print(f"API Docs: {BACKEND_URL}/docs")
-    print("Demo user loaded")
-    print("Seed data loaded")
+    print("Demo mode disabled")
+    print("Runtime data initialized")
     print("Parquet lake ready")
     print("SQLite metadata ready")
     print(
