@@ -1,6 +1,12 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-const colors = ["#2C71E8", "#14A491", "#D38E29", "#7C89B5", "#B54A6A"];
+const colors = [
+  "rgb(var(--color-accent))",
+  "rgb(var(--color-teal))",
+  "rgb(var(--color-amber))",
+  "rgb(var(--color-muted))",
+  "rgb(var(--color-danger))",
+];
 
 export function PortfolioAllocationChart({
   positions,

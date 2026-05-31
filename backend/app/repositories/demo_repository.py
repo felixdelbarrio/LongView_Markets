@@ -749,7 +749,8 @@ def seed_snapshot() -> dict[str, Any]:
 def ensure_sqlite(data_dir: Path) -> Path:
     data_dir.mkdir(parents=True, exist_ok=True)
     db_path = data_dir / "longview.sqlite"
-    with sqlite3.connect(db_path) as connection:
+    connection = sqlite3.connect(db_path)
+    try:
         connection.execute(
             "CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL)"
         )
@@ -761,6 +762,9 @@ def ensure_sqlite(data_dir: Path) -> Path:
             "INSERT OR REPLACE INTO metadata(key, value, updated_at) VALUES (?, ?, ?)",
             ("app_version", "0.1.0", AS_OF.isoformat()),
         )
+        connection.commit()
+    finally:
+        connection.close()
     return db_path
 
 

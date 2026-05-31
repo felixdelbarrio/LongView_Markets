@@ -5,6 +5,7 @@ from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
+from app.core.config import get_settings
 from app.db.database import ensure_database, get_connection
 
 
@@ -32,9 +33,10 @@ class PortfolioRepository:
                 """
                 SELECT * FROM portfolio_transactions
                 WHERE portfolio_id = ? AND portfolio_type = ?
+                  AND (? OR notes NOT LIKE '%Demo position created by LongView seed data%')
                 ORDER BY trade_date ASC, created_at ASC
                 """,
-                (portfolio_id, portfolio_type),
+                (portfolio_id, portfolio_type, get_settings().demo_mode_enabled),
             ).fetchall()
         return [dict(row) for row in rows]
 

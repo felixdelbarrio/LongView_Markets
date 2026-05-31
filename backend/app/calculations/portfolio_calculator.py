@@ -204,7 +204,7 @@ class PortfolioCalculator:
                 "transactions": len(transactions),
                 "positions": len(positions),
             },
-            "data_sources": ["sqlite", "parquet_or_seed_prices", "fx_cache"],
+            "data_sources": ["sqlite", "parquet_prices", "fx_cache"],
             "warnings": warnings,
             "quality_flags": sorted(
                 {flag for position in positions for flag in position["data_quality_flags"]}

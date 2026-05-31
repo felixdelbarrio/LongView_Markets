@@ -9,7 +9,7 @@ METRIC_DESCRIPTIONS: dict[str, dict[str, str]] = {
         "label": "Current reference price",
         "meaning": "Latest close in the local analytical lake.",
         "calculation": "Last adjusted close from daily prices.",
-        "limitations": "Demo data may not reflect live markets.",
+        "limitations": "Free provider data may be delayed or incomplete.",
     },
     "cagr": {
         "label": "CAGR",
@@ -38,7 +38,7 @@ METRIC_DESCRIPTIONS: dict[str, dict[str, str]] = {
     "dividend_yield": {
         "label": "Dividend yield",
         "meaning": "Forward dividend income estimate versus price.",
-        "calculation": "Next four demo dividends / current price.",
+        "calculation": "Next four observed or cached dividends / current price.",
         "limitations": "Dividend continuity is not guaranteed.",
     },
 }
@@ -136,10 +136,10 @@ class CalculationEngine:
             "metrics": metrics,
             "descriptions": METRIC_DESCRIPTIONS,
             "lineage": {
-                "source": "LongView deterministic seed",
+                "source": "LongView market cache",
                 "as_of": prices[-1]["ingested_at"],
                 "confidence": prices[-1].get("confidence", 0.8),
-                "data_kind": prices[-1].get("data_kind", "mock"),
+                "data_kind": prices[-1].get("data_kind", "observed"),
             },
         }
 

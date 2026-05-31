@@ -9,11 +9,14 @@ client = TestClient(app)
 
 def test_health_dashboard_and_core_endpoints() -> None:
     assert client.get("/api/v1/health").json()["status"] == "ok"
-    assert client.get("/api/v1/dashboard").json()["hero"]["portfolio_value"] > 0
+    dashboard = client.get("/api/v1/dashboard").json()
+    assert dashboard["empty_portfolio"] is True
+    assert dashboard["hero"]["portfolio_value"] == 0
+    assert dashboard["market_pulse_status"] == "pending_sync"
     assert client.get("/api/v1/markets").json()
     assert client.get("/api/v1/instruments/search?q=msft").json()[0]["ticker"] == "MSFT"
     assert client.get("/api/v1/instruments/MSFT").json()["instrument"]["ticker"] == "MSFT"
-    assert client.get("/api/v1/prices/MSFT").json()
+    assert client.get("/api/v1/prices/MSFT").status_code == 404
     assert client.post("/api/v1/prices/sync").json()["sqlite"]
 
 
@@ -52,7 +55,10 @@ def test_mutation_endpoints() -> None:
     assert client.post("/api/v1/alerts", json={"title": "Check drawdown"}).status_code == 200
     assert client.patch("/api/v1/alerts/1", json={"status": "read"}).json()["status"] == "read"
     assert (
-        client.post("/api/v1/portfolio/transactions", json={"ticker": "MSFT"}).json()["status"] == "recorded"
+        client.post("/api/v1/portfolio/transactions", json={"ticker": "MSFT"}).json()["ingestion_job"][
+            "status"
+        ]
+        == "queued"
     )
     assert (
         client.post("/api/v1/simulated-portfolio/transactions", json={"ticker": "MSFT"}).json()["data_kind"]
@@ -69,7 +75,7 @@ def test_mutation_endpoints() -> None:
     )
     assert client.post("/api/v1/screener/presets", json={"name": "Quality"}).json()["status"] == "saved"
     assert client.post("/api/v1/watchlists", json={"name": "Ideas"}).json()["status"] == "created"
-    assert client.post("/api/v1/watchlists/demo/items", json={"ticker": "MSFT"}).json()["status"] == "added"
+    assert client.post("/api/v1/watchlists/ideas/items", json={"ticker": "MSFT"}).json()["status"] == "added"
     assert client.post("/api/v1/journal", json={"ticker": "MSFT"}).json()["ticker"] == "MSFT"
     assert client.patch("/api/v1/journal/1", json={"status": "reviewed"}).json()["status"] == "reviewed"
     assert client.post("/api/v1/settings", json={"language": "en"}).json()["settings"]["language"] == "en"

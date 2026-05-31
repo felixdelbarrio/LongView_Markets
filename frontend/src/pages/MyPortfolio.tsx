@@ -6,6 +6,7 @@ import { Button } from "../design-system/components/Button";
 import { Card } from "../design-system/components/Card";
 import { DataQualityBadge } from "../design-system/components/DataQualityBadge";
 import { DataTable } from "../design-system/components/DataTable";
+import { EmptyState } from "../design-system/components/EmptyState";
 import { FormField } from "../design-system/components/FormField";
 import { Input } from "../design-system/components/Input";
 import { MetricCard } from "../design-system/components/MetricCard";
@@ -28,7 +29,7 @@ type TransactionForm = {
 };
 
 const initialForm: TransactionForm = {
-  ticker: "MSFT",
+  ticker: "",
   transaction_type: "buy",
   trade_date: new Date().toISOString().slice(0, 10),
   quantity: "1",
@@ -66,6 +67,7 @@ export function MyPortfolio() {
     ? (valuation.positions as Array<Record<string, unknown>>)
     : [];
   const txRows = transactions.data?.data ?? [];
+  const isEmpty = txRows.length === 0;
   const historyRows = useMemo(() => {
     const rows = history.data?.data?.history;
     return Array.isArray(rows) ? (rows.slice(-12) as Array<Record<string, unknown>>) : [];
@@ -85,36 +87,40 @@ export function MyPortfolio() {
       <PageHeader
         eyebrow="Cartera real"
         title="Mi cartera"
-        description="Introduce compras, ventas parciales, dividendos, comisiones, impuestos y divisas una vez. LongView reconstruye lotes FIFO, histórico diario, PyG, dividendos y valoración en EUR desde backend."
+        description="Aún no has añadido operaciones. Para reconstruir tu histórico introduce cada compra, venta y dividendo con su fecha real."
         source={portfolio.data?.source ?? "backend"}
       >
-        <div className="grid gap-3 md:grid-cols-4">
-          <MetricCard
-            label="Valor total"
-            value={formatMoney(
-              Number(valuation.total_market_value_base ?? 0),
-              String(valuation.base_currency ?? "EUR"),
-            )}
-          />
-          <MetricCard
-            label="Inversión"
-            value={formatMoney(
-              Number(valuation.total_invested_base ?? 0),
-              String(valuation.base_currency ?? "EUR"),
-            )}
-          />
-          <MetricCard
-            label="Rentabilidad"
-            value={formatPercent(Number(valuation.total_return_pct ?? 0))}
-          />
-          <MetricCard
-            label="Dividendos"
-            value={formatMoney(
-              Number(valuation.dividends_received_base ?? 0),
-              String(valuation.base_currency ?? "EUR"),
-            )}
-          />
-        </div>
+        {isEmpty ? (
+          <EmptyState message="Añadir primera compra activará la ingesta asíncrona de perfil, precios, dividendos, FX, noticias, forecasting, alertas y calidad de datos." />
+        ) : (
+          <div className="grid gap-3 md:grid-cols-4">
+            <MetricCard
+              label="Valor total"
+              value={formatMoney(
+                Number(valuation.total_market_value_base ?? 0),
+                String(valuation.base_currency ?? "EUR"),
+              )}
+            />
+            <MetricCard
+              label="Inversión"
+              value={formatMoney(
+                Number(valuation.total_invested_base ?? 0),
+                String(valuation.base_currency ?? "EUR"),
+              )}
+            />
+            <MetricCard
+              label="Rentabilidad"
+              value={formatPercent(Number(valuation.total_return_pct ?? 0))}
+            />
+            <MetricCard
+              label="Dividendos"
+              value={formatMoney(
+                Number(valuation.dividends_received_base ?? 0),
+                String(valuation.base_currency ?? "EUR"),
+              )}
+            />
+          </div>
+        )}
       </PageHeader>
 
       <Section title="Guía de entrada manual">
@@ -210,7 +216,7 @@ export function MyPortfolio() {
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             <Button onClick={submit} disabled={createTransaction.isPending}>
-              <Plus size={17} /> Añadir operación
+              <Plus size={17} /> {isEmpty ? "Añadir primera compra" : "Añadir operación"}
             </Button>
             <Button onClick={() => sync.mutate()} disabled={sync.isPending}>
               <RefreshCw size={17} /> Sincronizar precios

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -186,6 +188,81 @@ CREATE TABLE IF NOT EXISTS generative_context_snapshots (
   input_hash TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS prices_metadata (
+  id TEXT PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  rows_count INTEGER NOT NULL DEFAULT 0,
+  first_date TEXT,
+  last_date TEXT,
+  status TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS news_sentiment (
+  id TEXT PRIMARY KEY,
+  news_id TEXT NOT NULL,
+  ticker TEXT NOT NULL,
+  sentiment TEXT NOT NULL,
+  impact TEXT NOT NULL,
+  confidence REAL NOT NULL DEFAULT 0,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS forecast_jobs (
+  id TEXT PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS forecast_results (
+  id TEXT PRIMARY KEY,
+  job_id TEXT NOT NULL,
+  ticker TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS screener_recommendations (
+  id TEXT PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS screener_recommendation_outcomes (
+  id TEXT PRIMARY KEY,
+  recommendation_id TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS dividend_opportunities (
+  id TEXT PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS dividend_actions (
+  id TEXT PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS data_quality_snapshots (
+  id TEXT PRIMARY KEY,
+  scope TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
 """
 
 
@@ -193,11 +270,20 @@ def now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def get_connection(db_path: Path) -> sqlite3.Connection:
+@contextmanager
+def get_connection(db_path: Path) -> Iterator[sqlite3.Connection]:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(db_path)
     connection.row_factory = sqlite3.Row
-    return connection
+    try:
+        yield connection
+    except Exception:
+        connection.rollback()
+        raise
+    else:
+        connection.commit()
+    finally:
+        connection.close()
 
 
 def ensure_database(db_path: Path) -> Path:

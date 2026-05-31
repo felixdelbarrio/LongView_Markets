@@ -51,6 +51,13 @@ export function Settings() {
               <Select value={provider} onChange={(event) => setProvider(event.target.value)}>
                 <option value="yfinance">yfinance</option>
                 <option value="stooq">stooq</option>
+                <option value="alpha_vantage">alpha_vantage</option>
+                <option value="finnhub">finnhub</option>
+                <option value="twelve_data">twelve_data</option>
+                <option value="polygon">polygon</option>
+                <option value="bloomberg">bloomberg</option>
+                <option value="refinitiv">refinitiv</option>
+                <option value="factset">factset</option>
               </Select>
             </FormField>
             <FormField label="GPT externo">
